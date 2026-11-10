@@ -51,9 +51,12 @@ h1,h2,h3,.d{font-family:'Bricolage Grotesque',Figtree,sans-serif;letter-spacing:
 .live{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--sun);animation:pls 1.4s infinite;margin-right:6px}
 .wave{position:absolute;left:0;bottom:0;width:200%;height:46px;animation:wv 6s linear infinite}
 .ring{width:96px;height:96px;border-radius:50%;position:relative;overflow:hidden;border:3px solid var(--brand);background:var(--card);flex:none}.ring .lv{position:absolute;left:0;bottom:0;width:100%;height:0;background:linear-gradient(180deg,#2BD4C1,var(--brand2));transition:height 1.2s cubic-bezier(.2,.8,.2,1)}.ring b{position:absolute;inset:0;display:grid;place-items:center;font:800 26px 'Bricolage Grotesque';color:var(--ink);z-index:1;text-shadow:0 0 8px var(--card)}
+#demo,#stop{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:25;border:0;border-radius:99px;padding:7px 14px;font:600 12px Figtree;color:#fff;background:var(--sun);cursor:pointer;box-shadow:var(--shadow)}#stop{display:none;background:var(--ink);color:var(--bg)}
+#cap{position:absolute;left:16px;right:16px;bottom:96px;z-index:26;background:rgba(15,27,45,.92);color:#fff;padding:12px 16px;border-radius:16px;font-weight:600;text-align:center;opacity:0;transform:translateY(10px);transition:.3s;pointer-events:none}#cap.show{opacity:1;transform:none}
+.tp{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:rgba(255,107,74,.45);border:3px solid var(--sun);z-index:40;pointer-events:none;animation:tpa .7s ease-out forwards}@keyframes tpa{from{transform:scale(.4);opacity:1}to{transform:scale(1.4);opacity:0}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}}
 </style></head><body>
-<div id="phone"><div id="scr"></div><div id="tabs"></div><div id="sheet"><div id="sb"></div></div><div id="toast"></div></div>
+<div id="phone"><button id="demo">▶ Watch demo</button><button id="stop">■ Stop demo</button><div id="cap" aria-live="polite"></div><div id="scr"></div><div id="tabs"></div><div id="sheet"><div id="sb"></div></div><div id="toast"></div></div>
 <script>
 const P=[
 {id:1,n:'Maya Chen',s:'Deep home cleaning',c:'Cleaning',p:48,r:4.9,rv:212,d:.8,e:'🧼',g:'#12B5A6,#0A7F8F',x:30,y:38,b:'Eco-certified cleaner with eight years in apartments and family homes. Brings her own supplies.'},
@@ -142,5 +145,30 @@ readall:()=>{S.n.forEach(n=>n.u=0);go('alerts');toast('All caught up')},read:()=
 tog:()=>{S[d.k]=!S[d.k];if(d.k=='dark')document.documentElement.dataset.theme=S.dark?'dark':'light';go('profile')},
 toast:()=>toast(d.m),track:()=>go('track'),logout:()=>{sheet(0);$('#sb').innerHTML='<h3>Log out?</h3><p class="mut" style="margin:8px 0 18px">You can sign back in anytime.</p><button class="btn dng" data-a="out">Log out</button><button class="btn sec" style="margin-top:10px" data-a="stay">Stay signed in</button>';$('#sheet').classList.add('show')},
 out:()=>{$('#sheet').classList.remove('show');go('login',{pass:''})},stay:()=>$('#sheet').classList.remove('show')})[a]()});
+const D={id:0},sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function cap(t){const c=$('#cap');c.textContent=t||'';c.classList.toggle('show',!!t)}
+function tapAt(el){const r=el.getBoundingClientRect(),p=$('#phone').getBoundingClientRect(),d=document.createElement('i');d.className='tp';d.style.left=r.left-p.left+r.width/2+'px';d.style.top=r.top-p.top+r.height/2+'px';$('#phone').appendChild(d);setTimeout(()=>d.remove(),700)}
+function stopDemo(){D.id++;cap('');$('#demo').style.display='block';$('#stop').style.display='none'}
+async function play(){const id=++D.id,ok=()=>D.id==id;$('#demo').style.display='none';$('#stop').style.display='block';
+Object.assign(S,{ob:0,bk:[],promo:0,slot:1,q:'',cat:'All',view:'list',sort:'rating',email:'',pass:'',pw:0,sel:null,mp:undefined,tab:'home',pay:'card',n:N0.map(x=>({...x}))});
+const tap=async(sel,t,w=1400)=>{if(!ok())return;if(t)cap(t);await sleep(500);const el=$(sel);if(!el||!ok())return;el.scrollIntoView({block:'center'});tapAt(el);await sleep(250);if(!ok())return;el.click();await sleep(w)};
+const fill=(sel,v)=>{const e=$(sel);if(e&&ok()){e.value=v;e.dispatchEvent(new Event('input'))}};
+S.sheetOpen=0;go('splash');cap('Tidewell: home services, on call');await sleep(2400);if(!ok())return;go('ob',{ob:0});cap('Animated onboarding, built to be memorable');await sleep(1800);
+await tap('[data-a="next"]',null,1500);await tap('[data-a="next"]',null,1500);await tap('[data-a="next"]',null,800);
+cap('Secure sign-in with validation and password strength');await sleep(700);fill('#em','nicholas@example.com');await sleep(500);fill('#pw','Tidewell#2026');await sleep(1300);
+await tap('[data-a="login"]',null,2400);
+cap('Personalised home with live arrival times');await sleep(3200);
+await tap('[data-a="cat"][data-c="Plumbing"]','Search, filter and sort nearby pros',2000);
+await tap('[data-a="view"][data-v="map"]','Map view with nearby pins',2300);
+await tap('[data-a="open"]','Pro profile with Tide score',3200);
+await tap('[data-a="checkout"]','Fast, clear checkout',1700);
+fill('#pc','HELLO10');await tap('[data-a="promo"]','Promo codes and secure payment',2000);
+await tap('[data-a="paynow"]','Processing payment',3500);cap('Booking confirmed');await sleep(1800);
+await tap('[data-a="track"]','Live arrival tracking',7500);
+await tap('[data-a="tab"][data-t="bookings"]','Every booking in one place',2300);
+await tap('[data-a="tab"][data-t="alerts"]','Real-time alerts',2400);
+await tap('[data-a="tab"][data-t="profile"]','Profile, privacy and dark mode',2400);
+if(!ok())return;cap('Tidewell, prepared for Nicholas');await sleep(3000);if(ok())stopDemo()}
+$('#demo').onclick=play;$('#stop').onclick=stopDemo;
 render();setTimeout(()=>{if(S.scr=='splash')go('ob')},2200);
 </script></body></html>
